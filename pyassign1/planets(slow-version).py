@@ -2,11 +2,14 @@
 
 This program simulates the motion of planets in the solar system.
 The orbits are ellipse, and the data are set according to Wikipedia.
-With others' help, I upgrade my algorithm,
-and now the planets rotate synchronously!
+However, this program also has some disadvantages.
+It draws the orbits one by one,
+so the motion of planets aren't synchronous.
+And for each orbit, it draws one degree by one degree, which is too slow.
+Therefore, you'd better wait for a moment.
 If you want to simulate other orbits, you can change the data,
 for example, PlanetColor, PlanetRadius, OrbitalPeriod, Eccentricity,
-RotationStep, and so on.
+RotationTime, and so on.
 Notice: The value of Eccentricity should satisfy 0<Eccentricity<1!
 
 __author__ = "Li Zihan"
@@ -21,21 +24,21 @@ from turtle import *
 Star = Pen()
 Planet = []
 Phi = []
-AngularVelocity = []
 PlanetColor = ["blue", "lime", "red", "black", "orange", "cyan"]
 PlanetRadius = [
                 15.4839572, 28.9332796, 40.0000044,
                 60.9464924, 208.1345204, 381.4828128
                 ]
 OrbitalPeriod = [
-                 24.08467, 61.519726, 100.00174,
-                 188.08476, 1186.2615, 2944.7498
+                 0.2408467, 0.61519726, 1.0000174,
+                 1.8808476, 11.862615, 29.447498
                  ]
 Eccentricity = [
                 0.20563, 0.0067732, 0.016710,
                 0.093412, 0.048392, 0.054151
                 ]
-RotationStep = 1
+RotationTime = 1 / 6
+Step = 0
 
 
 def init():
@@ -53,7 +56,10 @@ def init():
         Planet[i].pencolor(PlanetColor[i])
         Planet[i].fillcolor(PlanetColor[i])
         Phi.append(uniform(0, 360) / 180 * pi)
-        AngularVelocity.append(2 * pi / OrbitalPeriod[i])
+        if Step == 0:
+            Step = 2 * pi / OrbitalPeriod[i] * RotationTime
+        else:
+            Step = min(Step, 2 * pi / OrbitalPeriod[i] * RotationTime)
         x = cos(Phi[i]) * PlanetRadius[i] * (1 - Eccentricity[i])
         y = sin(Phi[i]) * PlanetRadius[i] * (1 - Eccentricity[i])
         Planet[i].penup()
@@ -76,10 +82,10 @@ def motion():
     E = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     R = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     Theta = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    global RotationStep
+    global RotationTime
     while True:
         for i in range(6):
-            M[i] = M[i] + AngularVelocity[i]
+            M[i] = M[i] + 2 * pi / OrbitalPeriod[i] * RotationTime
             E[i] = KeplerEquation(Eccentricity[i], M[i], 8)
             Mu = 2 * atan2(
                            sqrt(1 + Eccentricity[i]) * sin(E[i] / 2),
@@ -89,9 +95,8 @@ def motion():
                 Mu = Mu + 2 * pi
             if Mu < Theta[i]:
                 Mu = Mu + 2 * pi
-            Delta = Mu - Theta[i]
-            for j in range(0, RotationStep):
-                Theta[i] = Theta[i] + Delta / RotationStep
+            while Theta[i] < Mu:
+                Theta[i] = Theta[i] + Step
                 R = PlanetRadius[i] * (1 - Eccentricity[i] ** 2)
                 R = R / (1 + Eccentricity[i] * cos(Theta[i]))
                 x = cos(Theta[i] + Phi[i]) * R
