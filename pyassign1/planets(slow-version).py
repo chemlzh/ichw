@@ -1,4 +1,4 @@
-"""planets.py
+"""planets(slow-version).py
 
 This program simulates the motion of planets in the solar system.
 The orbits are ellipse, and the data are set according to Wikipedia.
