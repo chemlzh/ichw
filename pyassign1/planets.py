@@ -8,6 +8,7 @@ If you want to simulate other orbits, you can change the data,
 for example, PlanetColor, PlanetRadius, OrbitalPeriod, Eccentricity,
 RotationStep, and so on.
 Notice: The value of Eccentricity should satisfy 0<Eccentricity<1!
+In addition, RotationStep should be a positive integer!
 
 __author__ = "Li Zihan"
 __pkuid__  = "1700011735"
@@ -35,7 +36,7 @@ Eccentricity = [
                 0.20563, 0.0067732, 0.016710,
                 0.093412, 0.048392, 0.054151
                 ]
-RotationStep = 1
+RotationStep = 2
 
 
 def init():
@@ -80,7 +81,7 @@ def motion():
     while True:
         for i in range(6):
             M[i] = M[i] + AngularVelocity[i]
-            E[i] = KeplerEquation(Eccentricity[i], M[i], 8)
+            E[i] = KeplerEquation(Eccentricity[i], M[i], 10)
             Mu = 2 * atan2(
                            sqrt(1 + Eccentricity[i]) * sin(E[i] / 2),
                            sqrt(1 - Eccentricity[i]) * cos(E[i] / 2)
