@@ -7,16 +7,14 @@ __email__  = "chemlzh@pku.edu.cn"
 
 import sys, re
 from urllib.request import urlopen
-
+from functools import cmp_to_key
 
 def wcount(lines, topn = 10):
     """count words from lines of text string, then sort by their counts
     in reverse order, output the topn (word count), each in one line. 
     """
-    parts = re.split('--', lines.lower())
-    originlst = []
-    for i in range(0, len(parts)):
-        originlst.extend(re.findall('[a-zA-Z\'\-]+', parts[i]))
+    lines = lines.lower()
+    originlst = re.findall('[a-zA-Z\'\-]+', lines)
     lst = list(set(originlst))
     cnt = []
     for i in lst:
